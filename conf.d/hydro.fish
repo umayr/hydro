@@ -1,3 +1,7 @@
+function fish_prompt --description Hydro
+    echo -e "$_hydro_color_start$hydro_symbol_start$hydro_color_normal $_hydro_color_git$$_hydro_git$hydro_color_normal$_hydro_color_duration$_hydro_cmd_duration$hydro_color_normal$_hydro_status$hydro_color_normal "
+end
+
 status is-interactive || exit
 
 set --global _hydro_git _hydro_git_$fish_pid
@@ -37,7 +41,11 @@ function _hydro_postexec --on-event fish_postexec
 
     for code in $last_status
         if test $code -ne 0
-            set --global _hydro_status "$_hydro_color_error| "(echo $last_status)" $_hydro_newline$_hydro_color_prompt$_hydro_color_error$hydro_symbol_prompt"
+            # We join the status numbers with pipes
+            set --local status_text (string join ' | ' $last_status)
+            
+            # We use single quotes '[' to strictly tell Fish these are text, not array indices
+            set --global _hydro_status $_hydro_color_error'[ '$status_text' ] '$_hydro_newline$_hydro_color_prompt$_hydro_color_error$hydro_symbol_prompt
             break
         end
     end
